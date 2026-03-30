@@ -7,6 +7,7 @@ import { loadConfig } from './config.js';
 import { parseExtraCmdArg, runExtraCmd } from './extra-cmd.js';
 import { getClaudeCodeVersion } from './version.js';
 import { getMemoryUsage } from './memory.js';
+import { estimateSessionCost } from './cost.js';
 import { fileURLToPath } from 'node:url';
 import { realpathSync } from 'node:fs';
 export async function main(overrides = {}) {
@@ -58,6 +59,7 @@ export async function main(overrides = {}) {
         const memoryUsage = config.display.showMemoryUsage && config.lineLayout === 'expanded'
             ? await deps.getMemoryUsage()
             : null;
+        const costData = estimateSessionCost(stdin);
         const ctx = {
             stdin,
             transcript,
@@ -69,6 +71,7 @@ export async function main(overrides = {}) {
             gitStatus,
             usageData,
             memoryUsage,
+            costData,
             config,
             extraLabel,
             claudeCodeVersion,

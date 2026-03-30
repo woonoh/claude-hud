@@ -1,6 +1,7 @@
 import { isLimitReached } from '../types.js';
 import { getContextPercent, getBufferedPercent, getModelName, getProviderLabel, getTotalTokens } from '../stdin.js';
 import { getOutputSpeed } from '../speed-tracker.js';
+import { estimateSessionCost } from '../cost.js';
 import { coloredBar, critical, git as gitColor, gitBranch as gitBranchColor, label, model as modelColor, project as projectColor, red, getContextColor, getQuotaColor, quotaBar, custom as customColor, RESET } from './colors.js';
 import { getAdaptiveBarWidth } from '../utils/terminal.js';
 const DEBUG = process.env.DEBUG?.includes('claude-hud') || process.env.DEBUG === '*';
@@ -25,23 +26,26 @@ export function renderSessionLine(ctx) {
     const contextValueMode = display?.contextValue ?? 'percent';
     const contextValue = formatContextValue(ctx, percent, contextValueMode);
     const contextValueDisplay = `${getContextColor(percent, colors)}${contextValue}${RESET}`;
-    // Model and context bar (FIRST)
+    // Model and context bar (FIRST) — cost is shown inline after percent
     const providerLabel = getProviderLabel(ctx.stdin);
     const showUsage = display?.showUsage !== false;
     const hasApiKey = !!process.env.ANTHROPIC_API_KEY;
     const modelQualifier = providerLabel ?? (showUsage && hasApiKey ? red('API') : undefined);
     const modelDisplay = modelQualifier ? `${model} | ${modelQualifier}` : model;
+    // Inline cost after context percent
+    const costData = ctx.costData ?? estimateSessionCost(ctx.stdin);
+    const costSuffix = costData ? ` ${label('(' + formatCost(costData.totalCost) + ')', colors)}` : '';
     if (display?.showModel !== false && display?.showContextBar !== false) {
-        parts.push(`${modelColor(`[${modelDisplay}]`, colors)} ${bar} ${contextValueDisplay}`);
+        parts.push(`${bar} ${contextValueDisplay}${costSuffix} | ${modelColor(model, colors)}`);
     }
     else if (display?.showModel !== false) {
-        parts.push(`${modelColor(`[${modelDisplay}]`, colors)} ${contextValueDisplay}`);
+        parts.push(`${contextValueDisplay}${costSuffix} | ${modelColor(model, colors)}`);
     }
     else if (display?.showContextBar !== false) {
-        parts.push(`${bar} ${contextValueDisplay}`);
+        parts.push(`${bar} ${contextValueDisplay}${costSuffix}`);
     }
     else {
-        parts.push(contextValueDisplay);
+        parts.push(`${contextValueDisplay}${costSuffix}`);
     }
     // Project path + git status (SECOND)
     let projectPart = null;
@@ -279,5 +283,10 @@ function formatResetTime(resetAt) {
         return `${days}d`;
     }
     return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+}
+function formatCost(amount) {
+    if (amount < 0.01) return `$${amount.toFixed(4)}`;
+    if (amount < 1.0) return `$${amount.toFixed(3)}`;
+    return `$${amount.toFixed(2)}`;
 }
 //# sourceMappingURL=session-line.js.map

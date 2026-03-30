@@ -4,6 +4,7 @@ import { renderToolsLine } from './tools-line.js';
 import { renderAgentsLine } from './agents-line.js';
 import { renderTodosLine } from './todos-line.js';
 import { renderIdentityLine, renderProjectLine, renderEnvironmentLine, renderUsageLine, renderMemoryLine, } from './lines/index.js';
+import { renderCostLine } from './lines/cost.js';
 import { dim, RESET } from './colors.js';
 // eslint-disable-next-line no-control-regex
 const ANSI_ESCAPE_PATTERN = /^\x1b\[[0-9;]*m/;
@@ -294,6 +295,8 @@ function renderElementLine(ctx, element) {
             return display?.showAgents === false ? null : renderAgentsLine(ctx);
         case 'todos':
             return display?.showTodos === false ? null : renderTodosLine(ctx);
+        case 'cost':
+            return renderCostLine(ctx);
     }
 }
 function renderCompact(ctx) {
@@ -314,21 +317,23 @@ function renderExpanded(ctx) {
             continue;
         }
         const nextElement = elementOrder[index + 1];
-        if ((element === 'context' && nextElement === 'usage' && !seen.has('usage'))
-            || (element === 'usage' && nextElement === 'context' && !seen.has('context'))) {
-            seen.add(element);
-            seen.add(nextElement);
-            const firstLine = renderElementLine(ctx, element);
-            const secondLine = renderElementLine(ctx, nextElement);
-            if (firstLine && secondLine) {
-                lines.push({ line: `${firstLine} │ ${secondLine}`, isActivity: false });
+        // Merge context, usage, and cost onto the same line
+        const MERGEABLE = new Set(['context', 'usage', 'cost']);
+        if (MERGEABLE.has(element) && nextElement && MERGEABLE.has(nextElement) && !seen.has(nextElement)) {
+            // Collect all consecutive mergeable elements
+            const group = [element];
+            let look = index + 1;
+            while (look < elementOrder.length && MERGEABLE.has(elementOrder[look]) && !seen.has(elementOrder[look])) {
+                group.push(elementOrder[look]);
+                look++;
             }
-            else if (firstLine) {
-                lines.push({ line: firstLine, isActivity: false });
+            for (const el of group) seen.add(el);
+            const parts = group.map(el => renderElementLine(ctx, el)).filter(Boolean);
+            if (parts.length > 0) {
+                lines.push({ line: parts.join(' │ '), isActivity: false });
             }
-            else if (secondLine) {
-                lines.push({ line: secondLine, isActivity: false });
-            }
+            // Skip past consumed elements
+            index = look - 1;
             continue;
         }
         seen.add(element);

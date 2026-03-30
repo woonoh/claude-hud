@@ -6,6 +6,7 @@ export const DEFAULT_ELEMENT_ORDER = [
     'project',
     'context',
     'usage',
+    'cost',
     'memory',
     'environment',
     'tools',
@@ -14,7 +15,7 @@ export const DEFAULT_ELEMENT_ORDER = [
 ];
 const KNOWN_ELEMENTS = new Set(DEFAULT_ELEMENT_ORDER);
 export const DEFAULT_CONFIG = {
-    lineLayout: 'expanded',
+    lineLayout: 'compact',
     showSeparators: false,
     pathLevels: 1,
     elementOrder: [...DEFAULT_ELEMENT_ORDER],
