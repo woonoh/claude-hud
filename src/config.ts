@@ -15,6 +15,7 @@ export type HudColorName =
   | 'yellow'
   | 'magenta'
   | 'cyan'
+  | 'white'
   | 'brightBlue'
   | 'brightMagenta';
 
@@ -120,7 +121,7 @@ export const DEFAULT_CONFIG: HudConfig = {
     customLine: '',
   },
   colors: {
-    context: 'green',
+    context: 'white',
     usage: 'brightBlue',
     warning: 'yellow',
     usageWarning: 'brightMagenta',
@@ -162,6 +163,7 @@ function validateColorName(value: unknown): value is HudColorName {
     || value === 'yellow'
     || value === 'magenta'
     || value === 'cyan'
+    || value === 'white'
     || value === 'brightBlue'
     || value === 'brightMagenta';
 }

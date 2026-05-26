@@ -148,8 +148,19 @@ test('renderSessionLine handles missing cache token fields', () => {
   assert.ok(line.includes('cache: 0'));
 });
 
-test('getContextColor returns yellow for warning threshold', () => {
-  assert.equal(getContextColor(70), '\x1b[33m');
+test('getContextColor returns white below warning threshold (< 40%)', () => {
+  assert.equal(getContextColor(0), '\x1b[37m');
+  assert.equal(getContextColor(39), '\x1b[37m');
+});
+
+test('getContextColor returns yellow for warning threshold (40% <= x < 70%)', () => {
+  assert.equal(getContextColor(40), '\x1b[33m');
+  assert.equal(getContextColor(69), '\x1b[33m');
+});
+
+test('getContextColor returns red for critical threshold (>= 70%)', () => {
+  assert.equal(getContextColor(70), '\x1b[31m');
+  assert.equal(getContextColor(95), '\x1b[31m');
 });
 
 test('getContextColor and getQuotaColor respect custom semantic overrides', () => {
@@ -162,7 +173,8 @@ test('getContextColor and getQuotaColor respect custom semantic overrides', () =
   };
 
   assert.equal(getContextColor(10, colors), '\x1b[36m');
-  assert.equal(getContextColor(70, colors), '\x1b[94m');
+  assert.equal(getContextColor(50, colors), '\x1b[94m');
+  assert.equal(getContextColor(70, colors), '\x1b[31m');
   assert.equal(getQuotaColor(25, colors), '\x1b[35m');
   assert.equal(getQuotaColor(80, colors), '\x1b[33m');
 });
@@ -177,7 +189,8 @@ test('getContextColor and getQuotaColor resolve 256-color indices', () => {
   };
 
   assert.equal(getContextColor(10, colors), '\x1b[38;5;82m');
-  assert.equal(getContextColor(70, colors), '\x1b[38;5;220m');
+  assert.equal(getContextColor(50, colors), '\x1b[38;5;220m');
+  assert.equal(getContextColor(70, colors), '\x1b[38;5;196m');
   assert.equal(getContextColor(90, colors), '\x1b[38;5;196m');
   assert.equal(getQuotaColor(25, colors), '\x1b[38;5;214m');
   assert.equal(getQuotaColor(80, colors), '\x1b[38;5;97m');
@@ -194,7 +207,8 @@ test('getContextColor and getQuotaColor resolve hex color strings', () => {
   };
 
   assert.equal(getContextColor(10, colors), '\x1b[38;2;51;255;0m');
-  assert.equal(getContextColor(70, colors), '\x1b[38;2;255;135;215m');
+  assert.equal(getContextColor(50, colors), '\x1b[38;2;255;135;215m');
+  assert.equal(getContextColor(70, colors), '\x1b[38;2;255;0;0m');
   assert.equal(getQuotaColor(25, colors), '\x1b[38;2;255;176;0m');
   assert.equal(getQuotaColor(80, colors), '\x1b[38;2;175;135;255m');
 });

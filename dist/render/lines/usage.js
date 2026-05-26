@@ -14,12 +14,11 @@ export function renderUsageLine(ctx) {
     if (getProviderLabel(ctx.stdin)) {
         return null;
     }
-    const usageLabel = label('Usage', colors);
     if (isLimitReached(ctx.usageData)) {
         const resetTime = ctx.usageData.fiveHour === 100
             ? formatResetTime(ctx.usageData.fiveHourResetAt)
             : formatResetTime(ctx.usageData.sevenDayResetAt);
-        return `${usageLabel} ${critical(`⚠ Limit reached${resetTime ? ` (resets ${resetTime})` : ''}`, colors)}`;
+        return critical(`⚠ Limit reached${resetTime ? ` (resets ${resetTime})` : ''}`, colors);
     }
     const threshold = display?.usageThreshold ?? 0;
     const fiveHour = ctx.usageData.fiveHour;
@@ -41,7 +40,7 @@ export function renderUsageLine(ctx) {
             barWidth,
             forceLabel: true,
         });
-        return `${usageLabel} ${weeklyOnlyPart}`;
+        return weeklyOnlyPart;
     }
     const fiveHourPart = formatUsageWindowPart({
         label: '5h',
@@ -60,9 +59,9 @@ export function renderUsageLine(ctx) {
             usageBarEnabled,
             barWidth,
         });
-        return `${usageLabel} ${fiveHourPart} | ${sevenDayPart}`;
+        return `${fiveHourPart} | ${sevenDayPart}`;
     }
-    return `${usageLabel} ${fiveHourPart}`;
+    return fiveHourPart;
 }
 function formatUsagePercent(percent, colors) {
     if (percent === null) {

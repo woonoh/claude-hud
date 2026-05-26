@@ -81,7 +81,7 @@ Claude HUD gives you better insights into what's happening in your Claude Code s
 Context █████░░░░░ 45% │ Usage ██░░░░░░░░ 25% (1h 30m / 5h)
 ```
 - **Line 1** — Model, provider/auth label when relevant (for example `Bedrock` or `API`), project path, git branch
-- **Line 2** — Context bar (green → yellow → red) and usage rate limits
+- **Line 2** — Context bar (white < 40% → yellow < 70% → red ≥ 70%) and usage rate limits
 
 ### Optional lines (enable via `/claude-hud:configure`)
 ```
@@ -166,7 +166,7 @@ Edit `~/.claude/plugins/claude-hud/config.json` directly for advanced settings s
 | `display.showSessionName` | boolean | false | Show session slug or custom title from `/rename` |
 | `display.showClaudeCodeVersion` | boolean | false | Show the installed Claude Code version, e.g. `CC v2.1.81` |
 | `display.showMemoryUsage` | boolean | false | Show an approximate system RAM usage line in expanded layout |
-| `colors.context` | color value | `green` | Base color for the context bar and context percentage |
+| `colors.context` | color value | `white` | Base color for the context bar and context percentage (used below 40%) |
 | `colors.usage` | color value | `brightBlue` | Base color for usage bars and percentages below warning thresholds |
 | `colors.warning` | color value | `yellow` | Warning color for context thresholds and usage warning text |
 | `colors.usageWarning` | color value | `brightMagenta` | Warning color for usage bars and percentages near their threshold |
@@ -178,7 +178,7 @@ Edit `~/.claude/plugins/claude-hud/config.json` directly for advanced settings s
 | `colors.label` | color value | `dim` | Color for labels and secondary metadata such as `Context`, `Usage`, counts, and progress text |
 | `colors.custom` | color value | `208` | Color for the optional custom line |
 
-Supported color names: `dim`, `red`, `green`, `yellow`, `magenta`, `cyan`, `brightBlue`, `brightMagenta`. You can also use a 256-color number (`0-255`) or hex (`#rrggbb`).
+Supported color names: `dim`, `red`, `green`, `yellow`, `magenta`, `cyan`, `white`, `brightBlue`, `brightMagenta`. You can also use a 256-color number (`0-255`) or hex (`#rrggbb`).
 
 `display.showMemoryUsage` is fully opt-in and only renders in `expanded` layout. It reports approximate system RAM usage from the local machine, not precise memory pressure inside Claude Code or a specific process. The number may overstate actual pressure because reclaimable OS cache and buffers can still be counted as used memory.
 

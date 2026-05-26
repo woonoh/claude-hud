@@ -5,6 +5,7 @@ const GREEN = '\x1b[32m';
 const YELLOW = '\x1b[33m';
 const MAGENTA = '\x1b[35m';
 const CYAN = '\x1b[36m';
+const WHITE = '\x1b[37m';
 const BRIGHT_BLUE = '\x1b[94m';
 const BRIGHT_MAGENTA = '\x1b[95m';
 const CLAUDE_ORANGE = '\x1b[38;5;208m';
@@ -15,6 +16,7 @@ const ANSI_BY_NAME = {
     yellow: YELLOW,
     magenta: MAGENTA,
     cyan: CYAN,
+    white: WHITE,
     brightBlue: BRIGHT_BLUE,
     brightMagenta: BRIGHT_MAGENTA,
 };
@@ -93,11 +95,11 @@ export function critical(text, colors) {
     return colorize(text, resolveAnsi(colors?.critical, RED));
 }
 export function getContextColor(percent, colors) {
-    if (percent >= 85)
-        return resolveAnsi(colors?.critical, RED);
     if (percent >= 70)
+        return resolveAnsi(colors?.critical, RED);
+    if (percent >= 40)
         return resolveAnsi(colors?.warning, YELLOW);
-    return resolveAnsi(colors?.context, GREEN);
+    return resolveAnsi(colors?.context, WHITE);
 }
 export function getQuotaColor(percent, colors) {
     if (percent >= 90)

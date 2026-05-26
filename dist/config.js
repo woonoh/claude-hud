@@ -49,7 +49,7 @@ export const DEFAULT_CONFIG = {
         customLine: '',
     },
     colors: {
-        context: 'green',
+        context: 'white',
         usage: 'brightBlue',
         warning: 'yellow',
         usageWarning: 'brightMagenta',
@@ -85,6 +85,7 @@ function validateColorName(value) {
         || value === 'yellow'
         || value === 'magenta'
         || value === 'cyan'
+        || value === 'white'
         || value === 'brightBlue'
         || value === 'brightMagenta';
 }

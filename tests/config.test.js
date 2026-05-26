@@ -268,7 +268,7 @@ test('mergeConfig falls back to default when elementOrder is empty or invalid', 
 
 test('mergeConfig defaults colors to expected semantic palette', () => {
   const config = mergeConfig({});
-  assert.equal(config.colors.context, 'green');
+  assert.equal(config.colors.context, 'white');
   assert.equal(config.colors.usage, 'brightBlue');
   assert.equal(config.colors.warning, 'yellow');
   assert.equal(config.colors.usageWarning, 'brightMagenta');
