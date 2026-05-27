@@ -22,7 +22,11 @@ function detectModelTier(stdin) {
 
 function getCostCachePath(transcriptPath) {
   if (!transcriptPath) return null;
-  const sessionId = path.basename(path.dirname(transcriptPath)) || 'unknown';
+  // Transcript path layout: ~/.claude/projects/<project-slug>/<session-uuid>.jsonl
+  // The session UUID is the file basename without extension — that's the per-session key.
+  // (Previously this used the parent directory name, which is the project slug, so every
+  // session in the same project shared one cache file and accumulated each other's cost.)
+  const sessionId = path.basename(transcriptPath, '.jsonl') || 'unknown';
   const cacheDir = path.join(os.homedir(), '.claude', 'plugins', 'claude-hud');
   return path.join(cacheDir, `.cost-session-${sessionId}.json`);
 }
